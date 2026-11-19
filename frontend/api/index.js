@@ -6,7 +6,7 @@ export const config = {
 }
 
 export default async function handler(req, res) {
-  const target = upstreamUrl(req)
+  const target = upstream + (req.url || "/api/")
   const headers = new Headers()
   if (req.headers.authorization) headers.set("authorization", req.headers.authorization)
   if (req.headers["content-type"]) headers.set("content-type", req.headers["content-type"])
@@ -28,12 +28,4 @@ export default async function handler(req, res) {
   } catch {
     res.status(502).json({ detail: "The API on the VPS did not respond." })
   }
-}
-
-function upstreamUrl(req) {
-  const incoming = req.url || "/"
-  if (incoming.startsWith("/api/")) return upstream + incoming
-  const parts = [].concat(req.query.path || [])
-  const query = incoming.includes("?") ? incoming.slice(incoming.indexOf("?")) : ""
-  return `${upstream}/api/${parts.join("/")}${query}`
 }
