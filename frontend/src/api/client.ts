@@ -43,6 +43,11 @@ function parseError(data: unknown, status: number): ApiError {
   return new ApiError(message, fields)
 }
 
+function apiUrl(path: string): string {
+  const base = String(import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/$/, "")
+  return `${base}${path}`
+}
+
 export async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const headers = new Headers(options.headers)
   if (options.body && !headers.has("Content-Type")) {
@@ -53,7 +58,7 @@ export async function request<T>(path: string, options: RequestInit = {}): Promi
     headers.set("Authorization", `Token ${token}`)
   }
 
-  const response = await fetch(path, { ...options, headers })
+  const response = await fetch(apiUrl(path), { ...options, headers })
   if (response.status === 204) {
     return undefined as T
   }
