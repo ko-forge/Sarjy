@@ -1,0 +1,26 @@
+services:
+  api:
+    build: ./backend
+    env_file: ./backend/.env
+    environment:
+      SQLITE_PATH: /data/db.sqlite3
+    ports:
+      - "8000:8000"
+    volumes:
+      - sarjy-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health/')",
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  sarjy-data:
