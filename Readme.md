@@ -18,9 +18,17 @@ frontend/
   src/voice/              Microphone and playback
 ```
 
-Sign up and log in with email and password. After signup, the profile asks for a name. City, country, and age are optional. The browser keeps the API token and sends it on later requests.
+Sign up and log in with email and password. After signup, the profile asks for a name. City, country, and age are optional. The home screen is the travel agent: say or type a destination, and Sarjy answers. A Leaflet map uses OpenStreetMap tiles. When a place is named, Nominatim turns it into coordinates and the pin moves. Weather answers come from Open-Meteo, and only those numbers are spoken.
 
-`GET /api/health/` confirms the API is up. The other apps still expose `GET /api/<app>/status/` until their real behavior is built.
+Open-Meteo is the external API because a trip question is usually "what is the weather there", and it needs no key. Nominatim and OpenStreetMap are the map pair because the reviewer can watch the pin move without a Google billing account. The model itself is OpenAI-compatible, so the same code calls OpenAI or Z.ai GLM. Set these in `backend/.env`:
+
+```
+LLM_API_KEY=your-key
+LLM_BASE_URL=https://api.z.ai/api/paas/v4
+LLM_MODEL=glm-4.5-flash
+```
+
+For OpenAI, set `OPENAI_API_KEY` as well. The header then lists both Z.ai and OpenAI models, and the choice is remembered in the browser. The browser speaks replies with the Web Speech API and can listen when the mic button is available.
 
 ## Run locally
 
@@ -47,9 +55,6 @@ Open http://localhost:5173. The Vite dev server proxies `/api` to Django on port
 
 ## Next steps
 
-1. Conversations: a transcript for the logged-in user, and one chat endpoint.
-2. Memory: save and recall facts such as a favorite color.
-3. Voice: listen and speak in the browser.
-4. Weather tool: one external API, with a short justification.
-5. Deep dive: pick one area and go deep.
-6. Deploy a URL a reviewer can open.
+1. Memory: save and recall facts such as a favorite color across sessions.
+2. Deep dive: pick one area and go deep.
+3. Deploy a URL a reviewer can open.

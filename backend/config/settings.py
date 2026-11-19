@@ -96,6 +96,16 @@ CORS_ALLOWED_ORIGINS = [
 
 AUTH_USER_MODEL = "accounts.User"
 
+LLM_API_KEY = os.getenv("LLM_API_KEY", "")
+LLM_BASE_URL = os.getenv("LLM_BASE_URL", "https://api.z.ai/api/paas/v4")
+LLM_MODEL = os.getenv("LLM_MODEL", "glm-4.5-flash")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+ZAI_API_KEY = os.getenv("ZAI_API_KEY", "")
+NOMINATIM_USER_AGENT = os.getenv(
+    "NOMINATIM_USER_AGENT",
+    "Sarjy/1.0 (travel assistant)",
+)
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",

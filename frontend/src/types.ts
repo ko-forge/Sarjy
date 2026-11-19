@@ -29,3 +29,32 @@ export type ProfileInput = {
   country: string
   age: number | null
 }
+
+export type Place = {
+  label: string
+  latitude: number
+  longitude: number
+}
+
+export type ChatMessage = {
+  id: number
+  role: "user" | "assistant"
+  content: string
+}
+
+export type Conversation = {
+  id: number
+  place: Place | null
+  messages: ChatMessage[]
+}
+
+export type AiModel = {
+  id: string
+  label: string
+  provider: string
+}
+
+export type ModelList = {
+  default: string
+  models: AiModel[]
+}
