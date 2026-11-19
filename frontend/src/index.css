@@ -75,3 +75,83 @@ h1 {
 .card p {
   margin: 8px 0 0;
 }
+
+form {
+  display: grid;
+  gap: 16px;
+  max-width: 420px;
+  margin-top: 28px;
+}
+
+label {
+  display: grid;
+  gap: 6px;
+}
+
+label span {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 13px;
+}
+
+label em {
+  margin-left: 8px;
+  font-style: normal;
+  color: #78716c;
+}
+
+input {
+  font: inherit;
+  font-size: 18px;
+  padding: 10px 12px;
+  border: 1px solid #e7e1d8;
+  border-radius: 10px;
+  background: #fff;
+  color: inherit;
+}
+
+button {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 15px;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 10px;
+  background: #1c1917;
+  color: #f6f3ee;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+button.quiet,
+.actions a,
+.switch a {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  background: transparent;
+  color: #1c1917;
+  padding: 10px 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.actions {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.switch {
+  margin-top: 20px;
+}
+
+.summary {
+  margin-top: 24px;
+}
+
+small.error {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 13px;
+}

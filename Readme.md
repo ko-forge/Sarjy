@@ -7,6 +7,7 @@ A voice assistant. Django serves the API. React and TypeScript render the client
 ```
 backend/
   config/                 Django project: settings, root URLs, health check
+  apps/accounts/          Email login and the user profile
   apps/conversations/     Sessions and the transcript
   apps/memory/            Facts and preferences kept across sessions
   apps/voice/             Speech in and speech out
@@ -17,9 +18,9 @@ frontend/
   src/voice/              Microphone and playback
 ```
 
-Each app currently exposes `GET /api/<app>/status/`. `GET /api/health/` confirms the API is up. Models and real behavior come in later steps.
+Sign up and log in with email and password. After signup, the profile asks for a name. City, country, and age are optional. The browser keeps the API token and sends it on later requests.
 
-A reviewer does not need an account. The client will keep a session id in the browser, and both conversations and memories will be stored against that id.
+`GET /api/health/` confirms the API is up. The other apps still expose `GET /api/<app>/status/` until their real behavior is built.
 
 ## Run locally
 
@@ -46,7 +47,7 @@ Open http://localhost:5173. The Vite dev server proxies `/api` to Django on port
 
 ## Next steps
 
-1. Conversations: session id, transcript, one chat endpoint.
+1. Conversations: a transcript for the logged-in user, and one chat endpoint.
 2. Memory: save and recall facts such as a favorite color.
 3. Voice: listen and speak in the browser.
 4. Weather tool: one external API, with a short justification.
