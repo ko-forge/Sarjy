@@ -45,6 +45,8 @@ function parseError(data: unknown, status: number): ApiError {
 
 function apiUrl(path: string): string {
   const base = String(import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/$/, "")
+  const pageIsHttps = typeof window !== "undefined" && window.location.protocol === "https:"
+  if (!base || (pageIsHttps && base.startsWith("http://"))) return path
   return `${base}${path}`
 }
 
