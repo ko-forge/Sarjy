@@ -331,6 +331,33 @@ button.tool.on {
   font-size: 34px;
 }
 
+.plan-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+}
+
+.plan-steps li {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--sand);
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+
+.plan-steps li.now {
+  background: var(--sea-deep);
+  color: #f6f1e7;
+}
+
+.plan-steps li.done {
+  background: #e7f3ee;
+  color: var(--sea-deep);
+}
+
 .thread {
   overflow: auto;
   padding: 18px 22px 8px;

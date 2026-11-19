@@ -42,9 +42,18 @@ export type ChatMessage = {
   content: string
 }
 
+export type TripPlan = {
+  active: boolean
+  step: "destination" | "when" | "pace" | "done"
+  destination: string
+  when: string
+  pace: string
+}
+
 export type Conversation = {
   id: number
   place: Place | null
+  plan: TripPlan | null
   messages: ChatMessage[]
 }
 

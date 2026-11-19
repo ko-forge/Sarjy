@@ -5,8 +5,35 @@ import { getConversation, getModels, resetConversation, sendChatMessage } from "
 import { useAuth } from "../auth/AuthContext"
 import { getSavedModel, saveModel } from "../auth/storage"
 import { TravelMap } from "../components/TravelMap"
-import type { AiModel, ChatMessage, Place } from "../types"
+import type { AiModel, ChatMessage, Place, TripPlan } from "../types"
 import { canListen, listenOnce, speak, stopSpeaking } from "../voice/speech"
+
+const PLAN_ORDER = ["destination", "when", "pace", "done"] as const
+
+function PlanSteps({ plan }: { plan: TripPlan }) {
+  const current = PLAN_ORDER.indexOf(plan.step)
+  const steps = [
+    { id: "destination", label: plan.destination ? shortPlace(plan.destination) : "Where" },
+    { id: "when", label: plan.when || "When" },
+    { id: "pace", label: plan.pace || "Pace" },
+  ]
+  return (
+    <ol className="plan-steps">
+      {steps.map((step, index) => {
+        const state = plan.step === "done" || index < current ? "done" : index === current ? "now" : ""
+        return (
+          <li key={step.id} className={state}>
+            {step.label}
+          </li>
+        )
+      })}
+    </ol>
+  )
+}
+
+function shortPlace(label: string): string {
+  return label.split(",")[0] || label
+}
 
 function modelProviders(models: AiModel[]): string[] {
   return [...new Set(models.map((model) => model.provider))]
@@ -43,6 +70,7 @@ export function HomePage() {
   const { user, logout } = useAuth()
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [place, setPlace] = useState<Place | null>(null)
+  const [plan, setPlan] = useState<TripPlan | null>(null)
   const [draft, setDraft] = useState("")
   const [pending, setPending] = useState<string | null>(null)
   const [listening, setListening] = useState(false)
@@ -60,6 +88,7 @@ export function HomePage() {
         if (cancelled) return
         setMessages(conversation.messages)
         setPlace(conversation.place)
+        setPlan(conversation.plan)
       })
       .catch((cause) => {
         if (!cancelled) setError(cause instanceof ApiError ? cause.message : "Could not open the trip.")
@@ -98,6 +127,7 @@ export function HomePage() {
       const conversation = await sendChatMessage(message, modelId)
       setMessages(conversation.messages)
       setPlace(conversation.place)
+      setPlan(conversation.plan)
       const reply = conversation.messages.at(-1)
       if (voiceOn && reply?.role === "assistant") speak(reply.content)
     } catch (cause) {
@@ -144,12 +174,13 @@ export function HomePage() {
     const conversation = await resetConversation()
     setMessages(conversation.messages)
     setPlace(conversation.place)
+    setPlan(conversation.plan)
   }
 
   const ideas = [
     "What's the weather in Lisbon?",
     "I want to go to Kyoto",
-    "Show me Accra",
+    "Plan a trip",
   ]
 
   return (
@@ -202,8 +233,9 @@ export function HomePage() {
       </header>
       <section className="chat-pane">
         <div className="chat-head">
-          <p className="eyebrow">Trip</p>
+          <p className="eyebrow">{plan ? (plan.step === "done" ? "Plan ready" : "Planning") : "Trip"}</p>
           <h1>Where next?</h1>
+          {plan ? <PlanSteps plan={plan} /> : null}
         </div>
         <div className="thread" ref={threadRef}>
           {messages.length === 0 && !pending ? (
@@ -229,7 +261,7 @@ export function HomePage() {
               <p className="bubble user">{pending}</p>
               <p className="bubble assistant waiting">
                 <span className="who">Sarjy</span>
-                Checking the map and the weather.
+                {plan && plan.step !== "done" ? "Saving this step." : "Checking the map and the weather."}
               </p>
             </>
           ) : null}

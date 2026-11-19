@@ -3,8 +3,10 @@ from rest_framework.exceptions import APIException
 from rest_framework import status
 
 from apps.conversations.agent import LlmError, run_turn
+from apps.conversations.guardrails import screen_message
 from apps.conversations.llm_models import LlmNotConfigured, UnknownModel, resolve_model
 from apps.conversations.models import Conversation, Message
+from apps.conversations.plan import advance_plan, public_plan
 from apps.tools.services import geocode
 
 
@@ -49,12 +51,21 @@ def send_message(user, text: str, model_id: str | None = None) -> Conversation:
         raise ModelNotAvailable() from exc
 
     conversation = current_conversation(user)
-    try:
-        reply, place = run_turn(user, conversation, text, model["id"])
-    except LlmNotConfigured as exc:
-        raise ModelNotConfigured() from exc
-    except LlmError as exc:
-        raise ModelUnavailable(str(exc)) from exc
+    refusal = screen_message(text)
+    plan = None
+    if refusal:
+        reply, place = refusal, None
+    else:
+        planned = advance_plan(user, conversation, text, model["id"])
+        if planned is None:
+            try:
+                reply, place = run_turn(user, conversation, text, model["id"])
+            except LlmNotConfigured as exc:
+                raise ModelNotConfigured() from exc
+            except LlmError as exc:
+                raise ModelUnavailable(str(exc)) from exc
+        else:
+            reply, place, plan = planned
 
     with transaction.atomic():
         Message.objects.create(conversation=conversation, role="user", content=text)
@@ -63,6 +74,8 @@ def send_message(user, text: str, model_id: str | None = None) -> Conversation:
             conversation.place_label = place["label"][:240]
             conversation.latitude = place["latitude"]
             conversation.longitude = place["longitude"]
+        if plan is not None:
+            conversation.plan = plan
         conversation.save()
     return conversation
 
@@ -78,6 +91,7 @@ def conversation_payload(conversation: Conversation) -> dict:
     return {
         "id": conversation.id,
         "place": place,
+        "plan": public_plan(conversation.plan),
         "messages": [
             {
                 "id": message.id,

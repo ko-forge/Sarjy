@@ -65,7 +65,7 @@ class AgentLoopTests(TestCase):
         self.assertEqual(complete.call_count, 3)
         weather.assert_called_once()
 
-    @override_settings(LLM_API_KEY="")
+    @override_settings(LLM_API_KEY="", ZAI_API_KEY="", OPENAI_API_KEY="")
     def test_missing_key_is_reported(self):
         with self.assertRaises(LlmNotConfigured):
             complete([{"role": "user", "content": "Hello"}])
