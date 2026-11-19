@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet"
+import { MapContainer, Marker, Popup, TileLayer, useMap, ZoomControl } from "react-leaflet"
 import L from "leaflet"
 import type { Place } from "../types"
 import "leaflet/dist/leaflet.css"
@@ -7,8 +7,8 @@ import "leaflet/dist/leaflet.css"
 const pin = L.divIcon({
   className: "place-pin",
   html: "<span></span>",
-  iconSize: [22, 22],
-  iconAnchor: [11, 11],
+  iconSize: [28, 28],
+  iconAnchor: [14, 26],
 })
 
 function FlyTo({ place }: { place: Place }) {
@@ -22,7 +22,8 @@ function FlyTo({ place }: { place: Place }) {
 export function TravelMap({ place }: { place: Place | null }) {
   return (
     <div className="map-pane">
-      <MapContainer center={[20, 0]} zoom={2} scrollWheelZoom className="map">
+      <MapContainer center={[20, 0]} zoom={2} scrollWheelZoom zoomControl={false} className="map">
+        <ZoomControl position="bottomright" />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -34,7 +35,10 @@ export function TravelMap({ place }: { place: Place | null }) {
           </Marker>
         ) : null}
       </MapContainer>
-      <p className="map-label">{place ? place.label : "Name a place and the pin will move."}</p>
+      <p className="map-label">
+        <strong>{place ? "On the map" : "No pin yet"}</strong>
+        {place ? place.label : "Name a city and it will land here."}
+      </p>
     </div>
   )
 }

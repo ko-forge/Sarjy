@@ -12,6 +12,33 @@ function modelProviders(models: AiModel[]): string[] {
   return [...new Set(models.map((model) => model.provider))]
 }
 
+function MicIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2z"
+      />
+    </svg>
+  )
+}
+
+function StopIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+      <rect width="14" height="14" x="5" y="5" rx="2" fill="currentColor" />
+    </svg>
+  )
+}
+
+function SendIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="currentColor" d="M3.4 11.2 20 4.2c.8-.3 1.6.5 1.3 1.3l-7 16.6c-.3.8-1.5.8-1.8 0l-2.4-6.1-6.1-2.4c-.8-.3-.8-1.5 0-1.8z" />
+    </svg>
+  )
+}
+
 export function HomePage() {
   const { user, logout } = useAuth()
   const [messages, setMessages] = useState<ChatMessage[]>([])
@@ -119,17 +146,28 @@ export function HomePage() {
     setPlace(conversation.place)
   }
 
+  const ideas = [
+    "What's the weather in Lisbon?",
+    "I want to go to Kyoto",
+    "Show me Accra",
+  ]
+
   return (
     <div className="studio">
+      <TravelMap place={place} />
       <header className="studio-bar">
-        <div>
-          <p className="eyebrow">Sarjy</p>
-          <p className="traveler">{user.profile.name}</p>
+        <div className="brand">
+          <span className="brand-mark" aria-hidden="true" />
+          <div>
+            <p className="eyebrow">Sarjy</p>
+            <p className="traveler">{user.profile.name}</p>
+          </div>
         </div>
         <div className="actions">
           <label className="model-picker">
             <span>Model</span>
             <select
+              aria-label="Model"
               value={modelId}
               onChange={(event) => {
                 setModelId(event.target.value)
@@ -150,56 +188,68 @@ export function HomePage() {
               ))}
             </select>
           </label>
-          <button type="button" className="quiet" onClick={() => setVoiceOn((on) => !on)}>
+          <button type="button" className={voiceOn ? "tool on" : "tool"} onClick={() => setVoiceOn((on) => !on)}>
             {voiceOn ? "Voice on" : "Voice off"}
           </button>
-          <button type="button" className="quiet" onClick={() => void onReset()}>
+          <button type="button" className="tool" onClick={() => void onReset()}>
             New trip
           </button>
           <Link to="/profile">Profile</Link>
-          <button type="button" className="quiet" onClick={() => void logout()}>
+          <button type="button" className="tool" onClick={() => void logout()}>
             Log out
           </button>
         </div>
       </header>
-      <div className="studio-body">
-        <section className="chat-pane">
-          <div className="thread" ref={threadRef}>
-            {messages.length === 0 && !pending ? (
-              <p className="hint">
-                Tell Sarjy where you want to go. Ask about the weather, or name a city and the pin will move.
+      <section className="chat-pane">
+        <div className="chat-head">
+          <p className="eyebrow">Trip</p>
+          <h1>Where next?</h1>
+        </div>
+        <div className="thread" ref={threadRef}>
+          {messages.length === 0 && !pending ? (
+            <div className="empty-trip">
+              <p className="hint">Name a city, or ask what the weather is like when you get there.</p>
+              <div className="ideas">
+                {ideas.map((idea) => (
+                  <button key={idea} type="button" className="chip" onClick={() => void send(idea)}>
+                    {idea}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null}
+          {messages.map((message) => (
+            <p key={message.id} className={`bubble ${message.role}`}>
+              {message.role === "assistant" ? <span className="who">Sarjy</span> : null}
+              {message.content}
+            </p>
+          ))}
+          {pending ? (
+            <>
+              <p className="bubble user">{pending}</p>
+              <p className="bubble assistant waiting">
+                <span className="who">Sarjy</span>
+                Checking the map and the weather.
               </p>
-            ) : null}
-            {messages.map((message) => (
-              <p key={message.id} className={`bubble ${message.role}`}>
-                {message.content}
-              </p>
-            ))}
-            {pending ? (
-              <>
-                <p className="bubble user">{pending}</p>
-                <p className="bubble assistant waiting">Checking the map and the weather.</p>
-              </>
-            ) : null}
-          </div>
-          {error ? <p className="error chat-error">{error}</p> : null}
-          <form className="composer" onSubmit={onSubmit}>
-            <input
-              value={draft}
-              placeholder={listening ? "Listening" : "Where do you want to go?"}
-              onChange={(event) => setDraft(event.target.value)}
-              disabled={listening}
-            />
-            <button type="button" className={listening ? "mic live" : "mic"} onClick={onMic}>
-              {listening ? "Stop" : "Mic"}
-            </button>
-            <button type="submit" disabled={pending !== null || listening || !draft.trim()}>
-              Send
-            </button>
-          </form>
-        </section>
-        <TravelMap place={place} />
-      </div>
+            </>
+          ) : null}
+        </div>
+        {error ? <p className="error chat-error">{error}</p> : null}
+        <form className="composer" onSubmit={onSubmit}>
+          <input
+            value={draft}
+            placeholder={listening ? "Listening…" : "Where do you want to go?"}
+            onChange={(event) => setDraft(event.target.value)}
+            disabled={listening}
+          />
+          <button type="button" className={listening ? "mic live" : "mic"} onClick={onMic} aria-label={listening ? "Stop listening" : "Speak"}>
+            {listening ? <StopIcon /> : <MicIcon />}
+          </button>
+          <button type="submit" className="send" disabled={pending !== null || listening || !draft.trim()} aria-label="Send">
+            <SendIcon />
+          </button>
+        </form>
+      </section>
     </div>
   )
 }

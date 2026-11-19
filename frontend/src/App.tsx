@@ -8,7 +8,7 @@ import { SignupPage } from "./pages/SignupPage"
 
 function RequireAuth({ children, requireProfile }: { children: ReactNode; requireProfile?: boolean }) {
   const { user, loading } = useAuth()
-  if (loading) return <main><p>Checking your session.</p></main>
+  if (loading) return <main className="splash"><p>Opening Sarjy</p></main>
   if (!user) return <Navigate to="/login" replace />
   if (requireProfile && !user.profile_complete) return <Navigate to="/profile" replace />
   return children

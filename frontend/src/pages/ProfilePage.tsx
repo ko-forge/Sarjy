@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { ApiError } from "../api/client"
 import { useAuth } from "../auth/AuthContext"
 import { Field } from "../components/Field"
+import { Gate } from "../components/Gate"
 
 export function ProfilePage() {
   const { user, saveProfile, logout } = useAuth()
@@ -54,14 +55,14 @@ export function ProfilePage() {
   }
 
   return (
-    <main>
-      <p className="eyebrow">Sarjy</p>
-      <h1>{complete ? "Your profile" : "Set up your profile"}</h1>
-      <p className="lede">
-        {complete
-          ? "Name is required. Location and age stay optional."
-          : "Add your name so Sarjy knows who it is talking to. The rest can wait."}
-      </p>
+    <Gate
+      title={complete ? "Your profile" : "Set up your profile"}
+      lede={
+        complete
+          ? "Name is required. City, country, and age can stay blank."
+          : "Add your name so Sarjy knows who it is talking to. The rest can wait."
+      }
+    >
       <form onSubmit={onSubmit}>
         <Field label="Name" hint="Required" error={fields.name}>
           <input
@@ -71,12 +72,14 @@ export function ProfilePage() {
             required
           />
         </Field>
-        <Field label="City" hint="Optional" error={fields.city}>
-          <input value={city} autoComplete="address-level2" onChange={(event) => setCity(event.target.value)} />
-        </Field>
-        <Field label="Country" hint="Optional" error={fields.country}>
-          <input value={country} autoComplete="country-name" onChange={(event) => setCountry(event.target.value)} />
-        </Field>
+        <div className="place-row">
+          <Field label="City" hint="Optional" error={fields.city}>
+            <input value={city} autoComplete="address-level2" onChange={(event) => setCity(event.target.value)} />
+          </Field>
+          <Field label="Country" hint="Optional" error={fields.country}>
+            <input value={country} autoComplete="country-name" onChange={(event) => setCountry(event.target.value)} />
+          </Field>
+        </div>
         <Field label="Age" hint="Optional" error={fields.age}>
           <input
             inputMode="numeric"
@@ -95,6 +98,6 @@ export function ProfilePage() {
           </button>
         </div>
       </form>
-    </main>
+    </Gate>
   )
 }

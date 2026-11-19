@@ -3,6 +3,7 @@ import { Link, Navigate } from "react-router-dom"
 import { ApiError } from "../api/client"
 import { useAuth } from "../auth/AuthContext"
 import { Field } from "../components/Field"
+import { Gate } from "../components/Gate"
 
 export function SignupPage() {
   const { user, loading, signup } = useAuth()
@@ -13,7 +14,7 @@ export function SignupPage() {
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
 
-  if (loading) return <main><p>Checking your session.</p></main>
+  if (loading) return <main className="splash"><p>Opening Sarjy</p></main>
   if (user) return <Navigate to={user.profile_complete ? "/" : "/profile"} replace />
 
   async function onSubmit(event: FormEvent) {
@@ -40,10 +41,7 @@ export function SignupPage() {
   }
 
   return (
-    <main>
-      <p className="eyebrow">Sarjy</p>
-      <h1>Create an account</h1>
-      <p className="lede">Use your email and a password. You will add your name on the next screen.</p>
+    <Gate title="Create an account" lede="Use your email and a password. You will add your name on the next screen.">
       <form onSubmit={onSubmit}>
         <Field label="Email" error={fields.email}>
           <input
@@ -80,6 +78,6 @@ export function SignupPage() {
       <p className="switch">
         Already have an account? <Link to="/login">Log in</Link>
       </p>
-    </main>
+    </Gate>
   )
 }
