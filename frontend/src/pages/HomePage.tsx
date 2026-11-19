@@ -4,36 +4,10 @@ import { ApiError } from "../api/client"
 import { getConversation, getModels, resetConversation, sendChatMessage } from "../api/chat"
 import { useAuth } from "../auth/AuthContext"
 import { getSavedModel, saveModel } from "../auth/storage"
+import { PlanSteps } from "../components/PlanSteps"
 import { TravelMap } from "../components/TravelMap"
 import type { AiModel, ChatMessage, Place, TripPlan } from "../types"
 import { canListen, listenOnce, speak, stopSpeaking } from "../voice/speech"
-
-const PLAN_ORDER = ["destination", "when", "pace", "done"] as const
-
-function PlanSteps({ plan }: { plan: TripPlan }) {
-  const current = PLAN_ORDER.indexOf(plan.step)
-  const steps = [
-    { id: "destination", label: plan.destination ? shortPlace(plan.destination) : "Where" },
-    { id: "when", label: plan.when || "When" },
-    { id: "pace", label: plan.pace || "Pace" },
-  ]
-  return (
-    <ol className="plan-steps">
-      {steps.map((step, index) => {
-        const state = plan.step === "done" || index < current ? "done" : index === current ? "now" : ""
-        return (
-          <li key={step.id} className={state}>
-            {step.label}
-          </li>
-        )
-      })}
-    </ol>
-  )
-}
-
-function shortPlace(label: string): string {
-  return label.split(",")[0] || label
-}
 
 function modelProviders(models: AiModel[]): string[] {
   return [...new Set(models.map((model) => model.provider))]
