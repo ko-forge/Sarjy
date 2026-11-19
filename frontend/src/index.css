@@ -1,0 +1,77 @@
+:root {
+  color: #1c1917;
+  background: #f6f3ee;
+  font-family: "Iowan Old Style", Palatino, Georgia, serif;
+  line-height: 1.5;
+}
+
+body {
+  margin: 0;
+}
+
+main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 64px 24px;
+}
+
+.eyebrow {
+  margin: 0;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 12px;
+}
+
+h1 {
+  margin: 8px 0 0;
+  font-size: 48px;
+  font-weight: 500;
+}
+
+.lede {
+  max-width: 46ch;
+  font-size: 18px;
+}
+
+.error {
+  color: #9f1239;
+}
+
+.grid {
+  display: grid;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.card {
+  padding: 16px 18px;
+  background: #fff;
+  border: 1px solid #e7e1d8;
+  border-radius: 12px;
+}
+
+.card header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.card h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.card span {
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #78716c;
+}
+
+.card p {
+  margin: 8px 0 0;
+}
